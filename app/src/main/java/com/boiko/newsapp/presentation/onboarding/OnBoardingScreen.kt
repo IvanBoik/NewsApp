@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.boiko.newsapp.presentation.Dimens.MediumPadding2
 import com.boiko.newsapp.presentation.Dimens.PageIndicatorWidth
 import com.boiko.newsapp.presentation.common.NewsButton
@@ -29,7 +28,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingScreen() {
+fun OnBoardingScreen(
+    event: (OnBoardingEvent) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         val pagerState = rememberPagerState(initialPage = 0) {
             pages.size
@@ -77,8 +78,8 @@ fun OnBoardingScreen() {
                 }
                 NewsButton(text = buttonState.value[1]) {
                     scope.launch {
-                        if (pagerState.currentPage == 3) {
-                            //TODO Navigate to Home Screen
+                        if (pagerState.currentPage == 2) {
+                            event(OnBoardingEvent.SaveAppEntry)
                         } else {
                             pagerState.animateScrollToPage(
                                 page = pagerState.currentPage + 1
