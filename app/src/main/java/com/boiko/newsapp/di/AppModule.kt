@@ -3,9 +3,9 @@ package com.boiko.newsapp.di
 import android.app.Application
 import com.boiko.newsapp.data.manager.LocalUserManagerImpl
 import com.boiko.newsapp.domain.manager.LocalUserManager
-import com.boiko.newsapp.domain.usecases.AppEntryUseCases
-import com.boiko.newsapp.domain.usecases.ReadAppEntry
-import com.boiko.newsapp.domain.usecases.SaveAppEntry
+import com.boiko.newsapp.domain.usecases.app_entry.AppEntryUseCases
+import com.boiko.newsapp.domain.usecases.app_entry.ReadAppEntry
+import com.boiko.newsapp.domain.usecases.app_entry.SaveAppEntry
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
