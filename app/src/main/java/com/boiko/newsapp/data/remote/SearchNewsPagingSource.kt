@@ -3,10 +3,10 @@ package com.boiko.newsapp.data.remote
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.boiko.newsapp.domain.model.Article
-import com.boiko.newsapp.util.Constants.API_KEY
 
-class NewsPagingSource(
+class SearchNewsPagingSource(
     private val newsApi: NewsApi,
+    private val searchQuery: String,
     private val sources: String
 ): PagingSource<Int, Article>() {
 
@@ -15,14 +15,15 @@ class NewsPagingSource(
     override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+            anchorPage?.nextKey?.minus(1) ?: anchorPage?.prevKey?.plus(1)
         }
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val page = params.key ?: 1
         return try {
-            val newsResponse = newsApi.getNews(sources = sources, page = page)
+            val newsResponse =
+                newsApi.searchNews(searchQuery = searchQuery, sources = sources, page = page)
             totalNewsCount += newsResponse.articles.size
             val articles = newsResponse.articles.distinctBy { it.title }
             LoadResult.Page(

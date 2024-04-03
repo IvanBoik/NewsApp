@@ -15,6 +15,8 @@ import com.boiko.newsapp.presentation.home.HomeScreen
 import com.boiko.newsapp.presentation.home.HomeViewModel
 import com.boiko.newsapp.presentation.onboarding.OnBoardingScreen
 import com.boiko.newsapp.presentation.onboarding.OnBoardingViewModel
+import com.boiko.newsapp.presentation.search.SearchScreen
+import com.boiko.newsapp.presentation.search.SearchViewModel
 
 @Composable
 fun NavGraph(
@@ -40,15 +42,9 @@ fun NavGraph(
             startDestination = Route.NewsNavigatorScreen.route
         ) {
             composable(route = Route.NewsNavigatorScreen.route) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val viewModel: HomeViewModel = hiltViewModel()
-                    val articles = viewModel.news.collectAsLazyPagingItems()
-                    HomeScreen(articles = articles) {
-                        
-                    }
+                val viewModel = hiltViewModel<SearchViewModel>()
+                SearchScreen(state = viewModel.state.value, event = viewModel::onEvent) {
+                    
                 }
             }
         }
