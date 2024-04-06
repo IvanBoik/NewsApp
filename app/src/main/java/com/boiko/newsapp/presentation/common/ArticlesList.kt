@@ -15,6 +15,25 @@ import com.boiko.newsapp.presentation.Dimens.ExtraSmallPadding
 import com.boiko.newsapp.presentation.Dimens.MediumPadding1
 import com.boiko.newsapp.presentation.EmptyScreen
 
+
+@Composable
+fun ArticlesList(
+    modifier: Modifier = Modifier,
+    articles: List<Article>,
+    onClick: (Article) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(MediumPadding1),
+        contentPadding = PaddingValues(all = ExtraSmallPadding)
+    ) {
+        items(count = articles.size) {
+            val article = articles[it]
+            ArticleCard(article = article, onClick = { onClick(article) })
+        }
+    }
+}
+
 @Composable
 fun ArticlesList(
     modifier: Modifier = Modifier,
@@ -24,7 +43,7 @@ fun ArticlesList(
     val handlePagingResult = handlePagingResult(articles = articles)
     if (handlePagingResult) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(MediumPadding1),
             contentPadding = PaddingValues(all = ExtraSmallPadding)
         ) {

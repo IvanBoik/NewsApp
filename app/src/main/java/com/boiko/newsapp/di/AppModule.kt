@@ -13,9 +13,12 @@ import com.boiko.newsapp.domain.repository.NewsRepository
 import com.boiko.newsapp.domain.usecases.app_entry.AppEntryUseCases
 import com.boiko.newsapp.domain.usecases.app_entry.ReadAppEntry
 import com.boiko.newsapp.domain.usecases.app_entry.SaveAppEntry
+import com.boiko.newsapp.domain.usecases.news.DeleteArticle
 import com.boiko.newsapp.domain.usecases.news.GetNews
 import com.boiko.newsapp.domain.usecases.news.NewsUseCases
 import com.boiko.newsapp.domain.usecases.news.SearchNews
+import com.boiko.newsapp.domain.usecases.news.SelectArticles
+import com.boiko.newsapp.domain.usecases.news.UpsertArticle
 import com.boiko.newsapp.util.Constants.BASE_URL
 import com.boiko.newsapp.util.Constants.NEWS_DATABASE_NAME
 import dagger.Module
@@ -64,11 +67,15 @@ object AppModule {
     @Provides
     @Singleton
     fun provideNewsUseCases(
-        newsRepository: NewsRepository
+        newsRepository: NewsRepository,
+        newsDAO: NewsDAO
     ): NewsUseCases {
         return NewsUseCases(
             getNews = GetNews(newsRepository),
-            searchNews = SearchNews(newsRepository)
+            searchNews = SearchNews(newsRepository),
+            upsertArticle = UpsertArticle(newsDAO),
+            deleteArticle = DeleteArticle(newsDAO),
+            selectArticles = SelectArticles(newsDAO)
         )
     }
 
