@@ -17,6 +17,7 @@ import com.boiko.newsapp.domain.usecases.news.DeleteArticle
 import com.boiko.newsapp.domain.usecases.news.GetNews
 import com.boiko.newsapp.domain.usecases.news.NewsUseCases
 import com.boiko.newsapp.domain.usecases.news.SearchNews
+import com.boiko.newsapp.domain.usecases.news.SelectArticle
 import com.boiko.newsapp.domain.usecases.news.SelectArticles
 import com.boiko.newsapp.domain.usecases.news.UpsertArticle
 import com.boiko.newsapp.util.Constants.BASE_URL
@@ -61,21 +62,22 @@ object AppModule {
     @Provides
     @Singleton
     fun provideNewsRepository(
-        newsApi: NewsApi
-    ): NewsRepository = NewsRepositoryImpl(newsApi)
+        newsApi: NewsApi,
+        newsDAO: NewsDAO
+    ): NewsRepository = NewsRepositoryImpl(newsApi, newsDAO)
 
     @Provides
     @Singleton
     fun provideNewsUseCases(
-        newsRepository: NewsRepository,
-        newsDAO: NewsDAO
+        newsRepository: NewsRepository
     ): NewsUseCases {
         return NewsUseCases(
             getNews = GetNews(newsRepository),
             searchNews = SearchNews(newsRepository),
-            upsertArticle = UpsertArticle(newsDAO),
-            deleteArticle = DeleteArticle(newsDAO),
-            selectArticles = SelectArticles(newsDAO)
+            upsertArticle = UpsertArticle(newsRepository),
+            deleteArticle = DeleteArticle(newsRepository),
+            selectArticles = SelectArticles(newsRepository),
+            selectArticle = SelectArticle(newsRepository)
         )
     }
 

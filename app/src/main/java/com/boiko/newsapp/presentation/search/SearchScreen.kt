@@ -1,6 +1,5 @@
 package com.boiko.newsapp.presentation.search
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,16 +9,16 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.boiko.newsapp.domain.model.Article
 import com.boiko.newsapp.presentation.Dimens.MediumPadding1
 import com.boiko.newsapp.presentation.common.ArticlesList
 import com.boiko.newsapp.presentation.common.SearchBar
-import com.boiko.newsapp.presentation.navgraph.Route
 
 @Composable
 fun SearchScreen(
     state: SearchState,
     event: (SearchEvent) -> Unit,
-    navigate: (String) -> Unit
+    navigateToDetails: (Article) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -37,9 +36,8 @@ fun SearchScreen(
         Spacer(modifier = Modifier.height(MediumPadding1))
         state.articles?.let {
             val articles = it.collectAsLazyPagingItems()
-            Log.d("myLog", articles.itemCount.toString())
-            ArticlesList(articles = articles) {
-                navigate(Route.DetailsScreen.route)
+            ArticlesList(articles = articles) { article ->
+                navigateToDetails(article)
             }
         }
     }

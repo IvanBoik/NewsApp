@@ -27,7 +27,6 @@ import com.boiko.newsapp.domain.model.Source
 import com.boiko.newsapp.presentation.Dimens.ArticleImageHeight
 import com.boiko.newsapp.presentation.Dimens.MediumPadding1
 import com.boiko.newsapp.presentation.details.components.DetailsTopBar
-import com.boiko.newsapp.presentation.search.SearchEvent
 import com.boiko.newsapp.ui.theme.NewsAppTheme
 
 @Composable
@@ -61,7 +60,7 @@ fun DetailsScreen(
                     }
                 }
             },
-            onBookmarkClick = { event(DetailsEvent.SaveArticle) },
+            onBookmarkClick = { event(DetailsEvent.UpsertDeleteArticle(article)) },
             onBackClick = navigateUp
         )
 

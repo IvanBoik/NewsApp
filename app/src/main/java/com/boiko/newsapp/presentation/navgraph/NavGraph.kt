@@ -6,8 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.boiko.newsapp.presentation.bookmark.BookmarkScreen
-import com.boiko.newsapp.presentation.bookmark.BookmarkViewModel
+import com.boiko.newsapp.presentation.news_navigator.NewsNavigator
 import com.boiko.newsapp.presentation.onboarding.OnBoardingScreen
 import com.boiko.newsapp.presentation.onboarding.OnBoardingViewModel
 
@@ -35,10 +34,7 @@ fun NavGraph(
             startDestination = Route.NewsNavigatorScreen.route
         ) {
             composable(route = Route.NewsNavigatorScreen.route) {
-                val viewModel = hiltViewModel<BookmarkViewModel>()
-                BookmarkScreen(state = viewModel.state.value) {
-
-                }
+                NewsNavigator()
             }
         }
     }
