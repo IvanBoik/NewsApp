@@ -12,83 +12,124 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.boiko.newsapp.presentation.Dimens.MediumPadding2
 import com.boiko.newsapp.presentation.Dimens.PageIndicatorWidth
 import com.boiko.newsapp.presentation.common.NewsButton
 import com.boiko.newsapp.presentation.common.NewsTextButton
 import com.boiko.newsapp.presentation.onboarding.components.OnBoardingPage
 import com.boiko.newsapp.presentation.onboarding.components.PageIndicator
+import com.boiko.newsapp.presentation.onboarding.components.SignInBottomSheet
+import com.boiko.newsapp.presentation.onboarding.components.SignUpBottomSheet
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingScreen(
     event: (OnBoardingEvent) -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        val pagerState = rememberPagerState(initialPage = 0) {
-            pages.size
-        }
+    val sheetState = rememberModalBottomSheetState()
+    val scaffoldState = rememberBottomSheetScaffoldState(sheetState)
+    val isClickOnSignIn = remember {
+        mutableStateOf(true)
+    }
 
-        val buttonState = remember {
-            derivedStateOf {
-                when(pagerState.currentPage) {
-                    0 -> listOf("", "Next")
-                    1 -> listOf("Back", "Next")
-                    2 -> listOf("Back", "Get Started")
-                    else -> listOf("", "")
-                }
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 0.dp,
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        sheetContainerColor = MaterialTheme.colorScheme.background,
+        sheetDragHandle = { BottomSheetDefaults.DragHandle(color = Color.Transparent)},
+        sheetContent = {
+            if (isClickOnSignIn.value) {
+                SignInBottomSheet(
+                    sheetState = sheetState,
+                    isClickOnSignIn = isClickOnSignIn
+                )
+            }
+            else {
+                SignUpBottomSheet(
+                    sheetState = sheetState,
+                    isClickOnSignIn = isClickOnSignIn
+                )
             }
         }
-        
-        HorizontalPager(state = pagerState) { index ->
-            OnBoardingPage(page = pages[index])
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = MediumPadding2)
-                .navigationBarsPadding(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            PageIndicator(
-                pageSize = pages.size,
-                selectedPage = pagerState.currentPage,
-                modifier = Modifier.width(PageIndicatorWidth)
-            )
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            val pagerState = rememberPagerState(initialPage = 0) {
+                pages.size
+            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            val buttonState = remember {
+                derivedStateOf {
+                    when(pagerState.currentPage) {
+                        0 -> listOf("", "Next")
+                        1 -> listOf("Back", "Next")
+                        2 -> listOf("Back", "Get Started")
+                        else -> listOf("", "")
+                    }
+                }
+            }
 
-                val scope = rememberCoroutineScope()
+            HorizontalPager(state = pagerState) { index ->
+                OnBoardingPage(page = pages[index])
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MediumPadding2)
+                    .navigationBarsPadding(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                PageIndicator(
+                    pageSize = pages.size,
+                    selectedPage = pagerState.currentPage,
+                    modifier = Modifier.width(PageIndicatorWidth)
+                )
 
-                if (buttonState.value[0].isNotEmpty()) {
-                    NewsTextButton(text = buttonState.value[0]) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    val scope = rememberCoroutineScope()
+
+                    if (buttonState.value[0].isNotEmpty()) {
+                        NewsTextButton(text = buttonState.value[0]) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
+                            }
+                        }
+                    }
+                    NewsButton(text = buttonState.value[1]) {
                         scope.launch {
-                            pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
-                        }
-                    }
-                }
-                NewsButton(text = buttonState.value[1]) {
-                    scope.launch {
-                        if (pagerState.currentPage == 2) {
-                            event(OnBoardingEvent.SaveAppEntry)
-                        } else {
-                            pagerState.animateScrollToPage(
-                                page = pagerState.currentPage + 1
-                            )
+                            if (pagerState.currentPage == 2) {
+                                scope.launch { sheetState.expand() }
+                                //event(OnBoardingEvent.SaveAppEntry)
+                            } else {
+                                pagerState.animateScrollToPage(
+                                    page = pagerState.currentPage + 1
+                                )
+                            }
                         }
                     }
                 }
             }
+            Spacer(modifier = Modifier.weight(0.5f))
         }
-        Spacer(modifier = Modifier.weight(0.5f))
     }
 }

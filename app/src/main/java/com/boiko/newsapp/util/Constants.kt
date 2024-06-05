@@ -10,4 +10,19 @@ object Constants {
     const val BASE_URL = "https://newsapi.org/v2/"
 
     const val NEWS_DATABASE_NAME= "news_db"
+
+    val MONTHS = listOf(
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    )
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.boiko.newsapp.R
+import com.boiko.newsapp.presentation.Dimens.ExtraSmallPadding2
 import com.boiko.newsapp.presentation.Dimens.MediumPadding1
 import com.boiko.newsapp.presentation.Dimens.MediumPadding2
 import com.boiko.newsapp.presentation.onboarding.Page
@@ -45,6 +46,7 @@ fun OnBoardingPage(
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
             color = colorResource(id = R.color.display_small)
         )
+        Spacer(modifier = Modifier.height(ExtraSmallPadding2))
         Text(
             text = page.description,
             modifier = Modifier.padding(horizontal = MediumPadding2),
