@@ -1,5 +1,6 @@
 package com.boiko.newsapp.presentation.onboarding.components
 
+import android.util.Patterns.EMAIL_ADDRESS
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,9 +24,11 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,16 +39,25 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.boiko.newsapp.R
+import com.boiko.newsapp.presentation.onboarding.OnBoardingEvent
+import com.boiko.newsapp.presentation.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInBottomSheet(
     sheetState: SheetState,
-    isClickOnSignIn: MutableState<Boolean>
+    isClickOnSignIn: MutableState<Boolean>,
+    viewModel: OnBoardingViewModel
 ) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
+
+    val isEmailValid = remember { mutableStateOf(false) }
+    val isPasswordValid = remember { mutableStateOf(false) }
+
+    var showEmailError by remember { mutableStateOf(false) }
+    var showPasswordError by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -109,21 +121,54 @@ fun SignInBottomSheet(
 
                 }
             }
-            Spacer(modifier = Modifier.height(30.dp))
-            TextInput(value = email, placeholder = "Email") {
-                it.isNotEmpty()
+            Spacer(modifier = Modifier.height(20.dp))
+            TextInput(
+                value = email,
+                placeholder = "Email",
+                isValid = isEmailValid
+            ) {
+                EMAIL_ADDRESS.matcher(it).matches()
+            }
+            if (showEmailError) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "Email must be valid",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 16.sp
+                    )
+                )
             }
             TextInput(
                 value = password,
                 placeholder = "Password",
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
+                isValid = isPasswordValid
             ) {
                 it.isNotEmpty()
             }
-            Spacer(modifier = Modifier.height(44.dp))
+            if (showPasswordError) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "Password must contain at least 8 characters",
+                    style = TextStyle(
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 16.sp
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(36.dp))
             Button(
                 onClick = {
-
+                    showEmailError = !isEmailValid.value
+                    showPasswordError = !isPasswordValid.value
+                    if (isEmailValid.value && isPasswordValid.value) {
+                        viewModel.onEvent(
+                            OnBoardingEvent.SignIn(
+                                email = email.value,
+                                password = password.value
+                            ))
+                    }
                 },
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.onBackground
@@ -141,7 +186,7 @@ fun SignInBottomSheet(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(36.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center

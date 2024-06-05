@@ -42,7 +42,8 @@ fun DateInput(
     value: MutableState<LocalDate>,
     formattedValue: String,
     placeholder: String,
-    dialogState: MaterialDialogState
+    dialogState: MaterialDialogState,
+    isValid: MutableState<Boolean>
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -97,12 +98,16 @@ fun DateInput(
                     }
                 }
                 if (formattedValue.isNotEmpty()) {
+                    isValid.value = true
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(end = 24.dp)
                     )
+                }
+                else {
+                    isValid.value = false
                 }
             }
         }

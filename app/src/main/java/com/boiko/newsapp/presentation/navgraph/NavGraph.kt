@@ -24,7 +24,8 @@ fun NavGraph(
             composable(route = Route.OnBoardingScreen.route) {
                 val viewModel = hiltViewModel<OnBoardingViewModel>()
                 OnBoardingScreen(
-                    event = viewModel::onEvent
+                    viewModel = viewModel,
+                    navigate = navController::navigate
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.boiko.newsapp.presentation.onboarding
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,11 +28,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.boiko.newsapp.data.remote.auth.AuthResult
 import com.boiko.newsapp.presentation.Dimens.MediumPadding2
 import com.boiko.newsapp.presentation.Dimens.PageIndicatorWidth
 import com.boiko.newsapp.presentation.common.NewsButton
 import com.boiko.newsapp.presentation.common.NewsTextButton
+import com.boiko.newsapp.presentation.navgraph.Route
 import com.boiko.newsapp.presentation.onboarding.components.OnBoardingPage
 import com.boiko.newsapp.presentation.onboarding.components.PageIndicator
 import com.boiko.newsapp.presentation.onboarding.components.SignInBottomSheet
@@ -40,12 +45,32 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingScreen(
-    event: (OnBoardingEvent) -> Unit
+    viewModel: OnBoardingViewModel,
+    navigate: (String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
     val scaffoldState = rememberBottomSheetScaffoldState(sheetState)
     val isClickOnSignIn = remember {
         mutableStateOf(true)
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(viewModel, context) {
+        viewModel.authResults.collect {result ->
+            when(result) {
+                is AuthResult.Authorized -> {
+                    sheetState.hide()
+                    viewModel.onEvent(OnBoardingEvent.SaveAppEntry)
+                    navigate(Route.NewsNavigatorScreen.route)
+                }
+                is AuthResult.Unauthorized -> {
+                    Toast.makeText(context, "You're not authorized", Toast.LENGTH_LONG).show()
+                }
+                is AuthResult.UnknownError -> {
+                    Toast.makeText(context, "An unknown error occurred", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     BottomSheetScaffold(
@@ -59,13 +84,15 @@ fun OnBoardingScreen(
             if (isClickOnSignIn.value) {
                 SignInBottomSheet(
                     sheetState = sheetState,
-                    isClickOnSignIn = isClickOnSignIn
+                    isClickOnSignIn = isClickOnSignIn,
+                    viewModel = viewModel
                 )
             }
             else {
                 SignUpBottomSheet(
                     sheetState = sheetState,
-                    isClickOnSignIn = isClickOnSignIn
+                    isClickOnSignIn = isClickOnSignIn,
+                    viewModel = viewModel
                 )
             }
         }

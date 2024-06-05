@@ -82,6 +82,8 @@ dependencies {
     //Retrofit
     implementation libs.retrofit
     implementation libs.converter.gson
+    //noinspection UseTomlInstead
+    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
 
     //Coil
     implementation(libs.coil.compose)
