@@ -2,5 +2,6 @@ package com.boiko.newsapp.data.remote.auth.dto
 
 data class AuthResponse(
     val id: Long,
-    val token: String
+    val token: String,
+    val avatarURL: String
 )

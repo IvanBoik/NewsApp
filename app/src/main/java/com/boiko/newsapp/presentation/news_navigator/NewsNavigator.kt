@@ -32,6 +32,8 @@ import com.boiko.newsapp.presentation.home.HomeViewModel
 import com.boiko.newsapp.presentation.navgraph.Route
 import com.boiko.newsapp.presentation.news_navigator.components.BottomNavigationItem
 import com.boiko.newsapp.presentation.news_navigator.components.NewsBottomNavigation
+import com.boiko.newsapp.presentation.personal_area.PersonalArea
+import com.boiko.newsapp.presentation.personal_area.PersonalAreaViewModel
 import com.boiko.newsapp.presentation.search.SearchScreen
 import com.boiko.newsapp.presentation.search.SearchViewModel
 
@@ -106,7 +108,11 @@ fun NewsNavigator() {
                 val viewModel = hiltViewModel<HomeViewModel>()
                 val articles = viewModel.news.collectAsLazyPagingItems()
                 HomeScreen(
+                    viewModel = viewModel,
                     articles = articles,
+                    navigateToPersonalArea = {
+                        navController.navigate(Route.PersonalArea.route)
+                    },
                     navigateToSearch = {
                         navigateToTab(
                             navController = navController,
@@ -156,6 +162,14 @@ fun NewsNavigator() {
                         article = article
                     )
                 }
+            }
+
+            composable(route = Route.PersonalArea.route) {
+                val viewModel = hiltViewModel<PersonalAreaViewModel>()
+                val userData = viewModel.getUserData()
+                PersonalArea(
+                    userData = userData
+                )
             }
         }
     }

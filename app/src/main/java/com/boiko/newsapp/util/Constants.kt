@@ -11,6 +11,8 @@ object Constants {
 
     const val NEWS_DATABASE_NAME= "news_db"
 
+    const val DEFAULT_AVATAR = "https://storage.yandexcloud.net/musium/default_avatar.png"
+
     val MONTHS = listOf(
         "January",
         "February",

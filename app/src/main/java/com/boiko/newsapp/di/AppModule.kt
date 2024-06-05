@@ -9,12 +9,15 @@ import com.boiko.newsapp.data.local.NewsDatabase
 import com.boiko.newsapp.data.local.NewsTypeConverter
 import com.boiko.newsapp.data.manager.LocalUserManagerImpl
 import com.boiko.newsapp.data.remote.NewsApi
+import com.boiko.newsapp.data.remote.UserApi
 import com.boiko.newsapp.data.remote.auth.AuthApi
 import com.boiko.newsapp.data.repository.AuthRepositoryImpl
 import com.boiko.newsapp.data.repository.NewsRepositoryImpl
+import com.boiko.newsapp.data.repository.UserRepositoryImpl
 import com.boiko.newsapp.domain.manager.LocalUserManager
 import com.boiko.newsapp.domain.repository.AuthRepository
 import com.boiko.newsapp.domain.repository.NewsRepository
+import com.boiko.newsapp.domain.repository.UserRepository
 import com.boiko.newsapp.domain.usecases.app_entry.AppEntryUseCases
 import com.boiko.newsapp.domain.usecases.app_entry.ReadAppEntry
 import com.boiko.newsapp.domain.usecases.app_entry.SaveAppEntry
@@ -28,6 +31,12 @@ import com.boiko.newsapp.domain.usecases.news.SearchNews
 import com.boiko.newsapp.domain.usecases.news.SelectArticle
 import com.boiko.newsapp.domain.usecases.news.SelectArticles
 import com.boiko.newsapp.domain.usecases.news.UpsertArticle
+import com.boiko.newsapp.domain.usecases.users.GetAvatar
+import com.boiko.newsapp.domain.usecases.users.GetUserData
+import com.boiko.newsapp.domain.usecases.users.UpdateAvatar
+import com.boiko.newsapp.domain.usecases.users.UpdatePassword
+import com.boiko.newsapp.domain.usecases.users.UpdateUserData
+import com.boiko.newsapp.domain.usecases.users.UserUseCases
 import com.boiko.newsapp.util.Constants.BASE_URL
 import com.boiko.newsapp.util.Constants.NEWS_DATABASE_NAME
 import com.squareup.moshi.FromJson
@@ -76,6 +85,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideUserUseCases(
+        prefs: SharedPreferences,
+        userRepository: UserRepository
+    ) = UserUseCases(
+        getUserData = GetUserData(userRepository, prefs),
+        getAvatar = GetAvatar(prefs),
+        updateAvatar = UpdateAvatar(userRepository),
+        updateUserData = UpdateUserData(userRepository),
+        updatePassword = UpdatePassword(userRepository)
+    )
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(prefs: SharedPreferences): OkHttpClient {
         val builder = OkHttpClient().newBuilder()
             .addInterceptor(Interceptor { chain ->
@@ -108,6 +130,20 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideUserApi(client: OkHttpClient): UserApi {
+        val moshi = Moshi.Builder()
+            .add(LocaleDateAdapter)
+            .build()
+        return Retrofit.Builder()
+            .baseUrl("http:10.0.2.2:8080/api/v1/users/")
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create()
+    }
+
+    @Provides
+    @Singleton
     fun provideNewsApi(): NewsApi {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -118,8 +154,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(api: AuthApi, prefs: SharedPreferences): AuthRepository {
+    fun provideAuthRepository(
+        api: AuthApi,
+        prefs: SharedPreferences
+    ): AuthRepository {
         return AuthRepositoryImpl(api, prefs)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(
+        api: UserApi,
+        prefs: SharedPreferences
+    ): UserRepository {
+        return UserRepositoryImpl(api, prefs)
     }
 
     @Provides
