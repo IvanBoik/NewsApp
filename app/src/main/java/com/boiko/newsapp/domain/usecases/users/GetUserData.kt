@@ -1,6 +1,7 @@
 package com.boiko.newsapp.domain.usecases.users
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.boiko.newsapp.data.remote.dto.UserData
 import com.boiko.newsapp.domain.repository.UserRepository
 

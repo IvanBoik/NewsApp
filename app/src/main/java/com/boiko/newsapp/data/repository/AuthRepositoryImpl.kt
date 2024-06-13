@@ -29,9 +29,11 @@ class AuthRepositoryImpl(
                 )
             )
             prefs.edit()
+                .remove("jwt")
                 .putString("jwt", response.token)
                 .putLong("id", response.id)
                 .putString("avatar", response.avatarURL)
+                .putString("password", password)
                 .apply()
 
             AuthResult.Authorized()
@@ -55,9 +57,11 @@ class AuthRepositoryImpl(
                 )
             )
             prefs.edit()
+                .remove("jwt")
                 .putString("jwt", response.token)
                 .putLong("id", response.id)
                 .putString("avatar", response.avatarURL)
+                .putString("password", password)
                 .apply()
             AuthResult.Authorized()
         } catch (e: HttpException) {

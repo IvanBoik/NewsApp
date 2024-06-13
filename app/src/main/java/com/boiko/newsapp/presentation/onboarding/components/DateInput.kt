@@ -40,6 +40,7 @@ import java.time.LocalDate
 @Composable
 fun DateInput(
     value: MutableState<LocalDate>,
+    readOnly: Boolean = false,
     formattedValue: String,
     placeholder: String,
     dialogState: MaterialDialogState,
@@ -72,7 +73,11 @@ fun DateInput(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
-            ) { dialogState.show() },
+            ) {
+                if (!readOnly) {
+                    dialogState.show()
+                }
+              },
         decorationBox = {innerTextField ->
             Row (
                 horizontalArrangement = Arrangement.SpaceBetween,

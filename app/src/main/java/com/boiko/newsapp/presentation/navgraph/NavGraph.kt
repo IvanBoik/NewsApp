@@ -1,5 +1,7 @@
 package com.boiko.newsapp.presentation.navgraph
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -10,6 +12,7 @@ import com.boiko.newsapp.presentation.news_navigator.NewsNavigator
 import com.boiko.newsapp.presentation.onboarding.OnBoardingScreen
 import com.boiko.newsapp.presentation.onboarding.OnBoardingViewModel
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun NavGraph(
     startDestination: String

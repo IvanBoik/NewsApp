@@ -1,5 +1,6 @@
 package com.boiko.newsapp.presentation.home
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,7 +91,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(end = MediumPadding1)
                     .size(50.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(CircleShape)
                     .clickable { navigateToPersonalArea() }
             )
         }

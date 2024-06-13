@@ -3,20 +3,25 @@ package com.boiko.newsapp.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.paging.LOGGER
 import androidx.room.Room
 import com.boiko.newsapp.data.local.NewsDAO
 import com.boiko.newsapp.data.local.NewsDatabase
 import com.boiko.newsapp.data.local.NewsTypeConverter
 import com.boiko.newsapp.data.manager.LocalUserManagerImpl
 import com.boiko.newsapp.data.remote.NewsApi
+import com.boiko.newsapp.data.remote.SongApi
 import com.boiko.newsapp.data.remote.UserApi
 import com.boiko.newsapp.data.remote.auth.AuthApi
 import com.boiko.newsapp.data.repository.AuthRepositoryImpl
 import com.boiko.newsapp.data.repository.NewsRepositoryImpl
+import com.boiko.newsapp.data.repository.SongRepositoryImpl
 import com.boiko.newsapp.data.repository.UserRepositoryImpl
 import com.boiko.newsapp.domain.manager.LocalUserManager
 import com.boiko.newsapp.domain.repository.AuthRepository
 import com.boiko.newsapp.domain.repository.NewsRepository
+import com.boiko.newsapp.domain.repository.SongRepository
 import com.boiko.newsapp.domain.repository.UserRepository
 import com.boiko.newsapp.domain.usecases.app_entry.AppEntryUseCases
 import com.boiko.newsapp.domain.usecases.app_entry.ReadAppEntry
@@ -31,8 +36,10 @@ import com.boiko.newsapp.domain.usecases.news.SearchNews
 import com.boiko.newsapp.domain.usecases.news.SelectArticle
 import com.boiko.newsapp.domain.usecases.news.SelectArticles
 import com.boiko.newsapp.domain.usecases.news.UpsertArticle
+import com.boiko.newsapp.domain.usecases.songs.GetSongs
 import com.boiko.newsapp.domain.usecases.users.GetAvatar
 import com.boiko.newsapp.domain.usecases.users.GetUserData
+import com.boiko.newsapp.domain.usecases.users.LogOut
 import com.boiko.newsapp.domain.usecases.users.UpdateAvatar
 import com.boiko.newsapp.domain.usecases.users.UpdatePassword
 import com.boiko.newsapp.domain.usecases.users.UpdateUserData
@@ -87,13 +94,15 @@ object AppModule {
     @Singleton
     fun provideUserUseCases(
         prefs: SharedPreferences,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        localUserManager: LocalUserManager
     ) = UserUseCases(
         getUserData = GetUserData(userRepository, prefs),
         getAvatar = GetAvatar(prefs),
         updateAvatar = UpdateAvatar(userRepository),
         updateUserData = UpdateUserData(userRepository),
-        updatePassword = UpdatePassword(userRepository)
+        updatePassword = UpdatePassword(userRepository),
+        logOut = LogOut(localUserManager)
     )
 
     @Provides
@@ -154,6 +163,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSongApi(): SongApi {
+        return Retrofit.Builder()
+            .baseUrl("http:10.0.2.2:8080/api/v1/songs/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create()
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(
         api: AuthApi,
         prefs: SharedPreferences
@@ -179,6 +198,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSongRepository(
+        songApi: SongApi
+    ): SongRepository = SongRepositoryImpl(songApi)
+
+    @Provides
+    @Singleton
     fun provideNewsUseCases(
         newsRepository: NewsRepository
     ): NewsUseCases {
@@ -191,6 +216,13 @@ object AppModule {
             selectArticle = SelectArticle(newsRepository)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideSongUseCases(
+        songRepository: SongRepository
+    ): GetSongs = GetSongs(songRepository)
+
 
     @Provides
     @Singleton

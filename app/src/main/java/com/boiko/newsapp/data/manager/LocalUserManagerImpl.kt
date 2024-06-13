@@ -21,6 +21,12 @@ class LocalUserManagerImpl(
         }
     }
 
+    override suspend fun removeAppEntry() {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.APP_ENTRY] = false
+        }
+    }
+
     override fun readAppEntry(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             preferences[PreferencesKeys.APP_ENTRY] ?: false

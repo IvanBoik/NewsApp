@@ -12,7 +12,7 @@ import java.io.FileOutputStream
 data class UpdateAvatar(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(context: Context, avatar: Bitmap) {
+    suspend operator fun invoke(context: Context, avatar: Bitmap): String {
         val file = File(context.cacheDir, "avatar")
         withContext(Dispatchers.IO) {
             file.createNewFile()
@@ -30,6 +30,6 @@ data class UpdateAvatar(
             fos.close()
         }
 
-        userRepository.updateAvatar(file)
+        return userRepository.updateAvatar(file)
     }
 }

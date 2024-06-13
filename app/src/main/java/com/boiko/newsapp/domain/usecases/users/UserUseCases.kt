@@ -5,5 +5,6 @@ data class UserUseCases(
     val getAvatar: GetAvatar,
     val updateAvatar: UpdateAvatar,
     val updateUserData: UpdateUserData,
-    val updatePassword: UpdatePassword
+    val updatePassword: UpdatePassword,
+    val logOut: LogOut
 )

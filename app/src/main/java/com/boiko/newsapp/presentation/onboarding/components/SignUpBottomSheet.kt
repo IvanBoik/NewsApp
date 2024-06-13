@@ -1,5 +1,7 @@
 package com.boiko.newsapp.presentation.onboarding.components
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Patterns.EMAIL_ADDRESS
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.boiko.newsapp.R
 import com.boiko.newsapp.presentation.onboarding.OnBoardingEvent
 import com.boiko.newsapp.presentation.onboarding.OnBoardingViewModel
@@ -183,7 +187,7 @@ fun SignUpBottomSheet(
                 placeholder = "Nickname",
                 isValid = isNicknameValid
             ) {
-                it.isNotEmpty()
+                it.isNotBlank()
             }
             if (showNicknameError) {
                 Spacer(modifier = Modifier.height(10.dp))

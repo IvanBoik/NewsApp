@@ -145,7 +145,7 @@ fun SignInBottomSheet(
                 visualTransformation = PasswordVisualTransformation(),
                 isValid = isPasswordValid
             ) {
-                it.isNotEmpty()
+                it.length >= 8
             }
             if (showPasswordError) {
                 Spacer(modifier = Modifier.height(10.dp))

@@ -1,7 +1,10 @@
 package com.boiko.newsapp.presentation.news_navigator
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -29,14 +32,18 @@ import com.boiko.newsapp.presentation.details.DetailsScreen
 import com.boiko.newsapp.presentation.details.DetailsViewModel
 import com.boiko.newsapp.presentation.home.HomeScreen
 import com.boiko.newsapp.presentation.home.HomeViewModel
+import com.boiko.newsapp.presentation.music_screen.MusicScreen
+import com.boiko.newsapp.presentation.music_screen.MusicViewModel
 import com.boiko.newsapp.presentation.navgraph.Route
 import com.boiko.newsapp.presentation.news_navigator.components.BottomNavigationItem
 import com.boiko.newsapp.presentation.news_navigator.components.NewsBottomNavigation
-import com.boiko.newsapp.presentation.personal_area.PersonalArea
+import com.boiko.newsapp.presentation.personal_area.PersonalAreaScreen
 import com.boiko.newsapp.presentation.personal_area.PersonalAreaViewModel
+import com.boiko.newsapp.presentation.personal_area.components.CameraScreen
 import com.boiko.newsapp.presentation.search.SearchScreen
 import com.boiko.newsapp.presentation.search.SearchViewModel
 
+@RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("RememberReturnType")
 @Composable
 fun NewsNavigator() {
@@ -44,7 +51,8 @@ fun NewsNavigator() {
         listOf(
             BottomNavigationItem(icon = R.drawable.ic_home, text = "Home"),
             BottomNavigationItem(icon = R.drawable.ic_search, text = "Search"),
-            BottomNavigationItem(icon = R.drawable.ic_bookmark, text = "Bookmark")
+            BottomNavigationItem(icon = R.drawable.ic_bookmark, text = "Bookmark"),
+            BottomNavigationItem(icon = R.drawable.ic_music, text = "Music")
         )
     }
 
@@ -59,6 +67,7 @@ fun NewsNavigator() {
             Route.HomeScreen.route -> 0
             Route.SearchScreen.route -> 1
             Route.BookmarkScreen.route -> 2
+            Route.MusicScreen.route -> 3
             else -> 0
         }
     }
@@ -68,6 +77,7 @@ fun NewsNavigator() {
         return@remember route == Route.HomeScreen.route
                 || route == Route.SearchScreen.route
                 || route == Route.BookmarkScreen.route
+                || route == Route.MusicScreen.route
     }
 
     Scaffold(
@@ -92,6 +102,11 @@ fun NewsNavigator() {
                         2 -> navigateToTab(
                             navController = navController,
                             route = Route.BookmarkScreen.route
+                        )
+
+                        3 -> navigateToTab(
+                            navController = navController,
+                            route = Route.MusicScreen.route
                         )
                     }
                 }
@@ -166,10 +181,23 @@ fun NewsNavigator() {
 
             composable(route = Route.PersonalArea.route) {
                 val viewModel = hiltViewModel<PersonalAreaViewModel>()
-                val userData = viewModel.getUserData()
-                PersonalArea(
-                    userData = userData
+                PersonalAreaScreen(
+                    viewModel = viewModel,
+                    navController = navController
                 )
+            }
+
+            composable(route = Route.CameraScreen.route) {
+                val viewModel = hiltViewModel<PersonalAreaViewModel>()
+                CameraScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+
+            composable(route = Route.MusicScreen.route) {
+                val viewModel = hiltViewModel<MusicViewModel>()
+                MusicScreen(viewModel = viewModel)
             }
         }
     }

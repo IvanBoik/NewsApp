@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TextInput(
     value: MutableState<String>,
+    readOnly: Boolean = false,
     placeholder: String,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isValid: MutableState<Boolean>,
@@ -38,6 +40,7 @@ fun TextInput(
 ) {
     Spacer(modifier = Modifier.height(16.dp))
     //TODO show error message when value is not valid
+
     BasicTextField(
         value = value.value,
         onValueChange = { value.value = it },
@@ -46,6 +49,7 @@ fun TextInput(
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp
         ),
+        readOnly = readOnly,
         visualTransformation = visualTransformation,
         singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.secondary),
